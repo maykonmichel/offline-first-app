@@ -1,11 +1,15 @@
-import React, {memo} from 'react';
-import {Text, TouchableOpacity} from 'react-native';
+import React, {memo, useCallback} from 'react';
+import {Alert, Text, TouchableOpacity} from 'react-native';
 
 import styles from './styles';
 
 const Todo = memo(({todo: {description}}) => {
+  const onDelete = useCallback(() => {
+    Alert.alert('Completar tarefa?', null, [{text: 'Não'}, {text: 'Sim'}]);
+  }, []);
+
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onDelete}>
       <Text>{description}</Text>
     </TouchableOpacity>
   );
