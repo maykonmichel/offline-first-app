@@ -1,5 +1,7 @@
 import React, {memo, useCallback} from 'react';
 import {FlatList, Image, View} from 'react-native';
+import gql from 'graphql-tag';
+import {useQuery} from '@apollo/react-hooks';
 
 import styles from './styles';
 import logo from '../../assets/images/logo.png';
@@ -7,22 +9,18 @@ import logo from '../../assets/images/logo.png';
 import NewTodo from '../../components/NewTodo';
 import Todo from '../../components/Todo';
 
-const todoList = [
-  {
-    id: '1',
-    description: 'First todo',
-  },
-  {
-    id: '2',
-    description: 'Second todo',
-  },
-  {
-    id: '3',
-    description: 'Third one',
-  },
-];
+const LOAD_TODO_LIST = gql`
+  query {
+    todoList {
+      id
+      description
+    }
+  }
+`;
 
 export default memo(() => {
+  const {data: {todoList} = {}} = useQuery(LOAD_TODO_LIST);
+
   const onDeleteTodo = useCallback(() => {}, []);
 
   const onSave = useCallback(() => {}, []);
