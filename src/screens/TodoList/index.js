@@ -1,5 +1,7 @@
 import React, {memo, useCallback} from 'react';
 import {FlatList, Image, View} from 'react-native';
+import gql from 'graphql-tag';
+import {useMutation, useQuery} from '@apollo/react-hooks';
 
 import styles from './styles';
 import logo from '../../assets/images/logo.png';
@@ -7,25 +9,38 @@ import logo from '../../assets/images/logo.png';
 import NewTodo from '../../components/NewTodo';
 import Todo from '../../components/Todo';
 
-const todoList = [
-  {
-    id: '1',
-    description: 'First todo',
-  },
-  {
-    id: '2',
-    description: 'Second todo',
-  },
-  {
-    id: '3',
-    description: 'Third one',
-  },
-];
+const ADD_TODO = gql`
+  mutation($description: String!) {
+    addTodo(description: $description) {
+      id
+      description
+    }
+  }
+`;
+
+const LOAD_TODO_LIST = gql`
+  query {
+    todoList {
+      id
+      description
+    }
+  }
+`;
 
 export default memo(() => {
+  const {data: {todoList} = {}, refetch} = useQuery(LOAD_TODO_LIST);
+
+  const [addTodo] = useMutation(ADD_TODO);
+
   const onDeleteTodo = useCallback(() => {}, []);
 
-  const onSave = useCallback(() => {}, []);
+  const onSave = useCallback(
+    async description => {
+      await addTodo({variables: {description}});
+      await refetch();
+    },
+    [addTodo, refetch],
+  );
 
   const renderItem = useCallback(
     ({item}) => <Todo onDelete={onDeleteTodo} todo={item} />,
