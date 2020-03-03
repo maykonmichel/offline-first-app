@@ -28,15 +28,18 @@ const LOAD_TODO_LIST = gql`
 `;
 
 export default memo(() => {
-  const {data: {todoList} = {}} = useQuery(LOAD_TODO_LIST);
+  const {data: {todoList} = {}, refetch} = useQuery(LOAD_TODO_LIST);
 
   const [addTodo] = useMutation(ADD_TODO);
 
   const onDeleteTodo = useCallback(() => {}, []);
 
   const onSave = useCallback(
-    description => addTodo({variables: {description}}),
-    [addTodo],
+    async description => {
+      await addTodo({variables: {description}});
+      await refetch();
+    },
+    [addTodo, refetch],
   );
 
   const renderItem = useCallback(
