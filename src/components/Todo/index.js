@@ -1,5 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {Alert, Text, TouchableOpacity} from 'react-native';
+import PropTypes from 'prop-types';
 
 import styles from './styles';
 
@@ -14,5 +15,17 @@ const Todo = memo(({todo: {description}}) => {
     </TouchableOpacity>
   );
 });
+
+Todo.propTypes = {
+  todo: PropTypes.shape({
+    description: PropTypes.string,
+  }),
+};
+
+Todo.defaultProps = {
+  todo: {
+    description: '',
+  },
+};
 
 export default Todo;
