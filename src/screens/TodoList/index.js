@@ -18,6 +18,15 @@ const ADD_TODO = gql`
   }
 `;
 
+const DELETE_TODO = gql`
+  mutation($id: ID!) {
+    deleteTodo(id: $id) {
+      id
+      description
+    }
+  }
+`;
+
 const LOAD_TODO_LIST = gql`
   query {
     todoList {
@@ -31,8 +40,15 @@ export default memo(() => {
   const {data: {todoList} = {}, refetch} = useQuery(LOAD_TODO_LIST);
 
   const [addTodo] = useMutation(ADD_TODO);
+  const [deleteTodo] = useMutation(DELETE_TODO);
 
-  const onDeleteTodo = useCallback(() => {}, []);
+  const onDeleteTodo = useCallback(
+    async id => {
+      await deleteTodo({variables: {id}});
+      await refetch();
+    },
+    [deleteTodo, refetch],
+  );
 
   const onSave = useCallback(
     async description => {
