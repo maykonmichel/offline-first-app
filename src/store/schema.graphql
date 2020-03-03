@@ -1,0 +1,20 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Mutation {
+    addTodo(description: String!): Todo!
+    deleteTodo(id: ID!): Todo!
+}
+
+type Query {
+    todoList: [Todo!]!
+}
+
+type Todo {
+    description: String!
+    id: ID!
+}
