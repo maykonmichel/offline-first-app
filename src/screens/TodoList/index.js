@@ -1,8 +1,13 @@
 import React, {memo} from 'react';
-import {View} from 'react-native';
+import {Image, View} from 'react-native';
 
 import styles from './styles';
+import logo from '../../assets/images/logo.png';
 
 export default memo(() => {
-  return <View style={styles.container} />;
+  return (
+    <View style={styles.container}>
+      <Image source={logo} />
+    </View>
+  );
 });
