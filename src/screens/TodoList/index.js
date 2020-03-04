@@ -37,17 +37,40 @@ const LOAD_TODO_LIST = gql`
 `;
 
 export default memo(() => {
-  const {data: {todoList} = {}, refetch} = useQuery(LOAD_TODO_LIST);
+  const {data: {todoList} = {}} = useQuery(LOAD_TODO_LIST);
 
   const [addTodo] = useMutation(ADD_TODO);
   const [deleteTodo] = useMutation(DELETE_TODO);
 
   const onDeleteTodo = useCallback(
     async id => {
-      await deleteTodo({variables: {id}});
-      await refetch();
+      await deleteTodo({
+        variables: {id},
+        optimisticResponse: {
+          __typename: 'Mutation',
+          deleteTodo: {
+            __typename: 'Todo',
+            id,
+            description: '',
+          },
+        },
+        update: (cache, {data: {deleteTodo: deletedTodo}}) => {
+          const {todoList: cachedTodoList} = cache.readQuery({
+            query: LOAD_TODO_LIST,
+          });
+
+          cache.writeQuery({
+            query: LOAD_TODO_LIST,
+            data: {
+              todoList: cachedTodoList.filter(
+                todo => todo.id !== deletedTodo.id,
+              ),
+            },
+          });
+        },
+      });
     },
-    [deleteTodo, refetch],
+    [deleteTodo],
   );
 
   const onSave = useCallback(
