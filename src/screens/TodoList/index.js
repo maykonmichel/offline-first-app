@@ -52,10 +52,31 @@ export default memo(() => {
 
   const onSave = useCallback(
     async description => {
-      await addTodo({variables: {description}});
-      await refetch();
+      await addTodo({
+        variables: {description},
+        optimisticResponse: {
+          __typename: 'Mutation',
+          addTodo: {
+            __typename: 'Todo',
+            id: new Date().getTime().toString(),
+            description,
+          },
+        },
+        update: (cache, {data: {addTodo: addedTodo}}) => {
+          const {todoList: cachedTodoList} = cache.readQuery({
+            query: LOAD_TODO_LIST,
+          });
+
+          cache.writeQuery({
+            query: LOAD_TODO_LIST,
+            data: {
+              todoList: [...cachedTodoList, addedTodo],
+            },
+          });
+        },
+      });
     },
-    [addTodo, refetch],
+    [addTodo],
   );
 
   const renderItem = useCallback(
