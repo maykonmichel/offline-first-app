@@ -2,12 +2,14 @@ import React from 'react';
 import {ApolloProvider} from 'react-apollo';
 
 import TodoList from './src/screens/TodoList';
-import api from './src/store/api';
+import useApi from './src/store/useApi';
 
 export default () => {
-  return (
+  const api = useApi();
+
+  return api ? (
     <ApolloProvider client={api}>
       <TodoList />
     </ApolloProvider>
-  );
+  ) : null;
 };
